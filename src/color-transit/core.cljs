@@ -1,6 +1,7 @@
 (ns color-transit.core
-  (:use color-transmit.canvas)
-  (:require [color-transmit.color :as color]))
+  (:require [color-transit.color :as color]
+            [color-transit.canvas :refer [ctx id->Canvas fill-style
+                                          fill-rect]]))
 
 (defonce app-state (atom {}))
 
@@ -22,8 +23,8 @@
   "Executes drawing every whatever time we defined."
   [canvas app-state]
   (-> canvas
-      (ctx fill-style (color/style 10 10 10))
-      (ctx 0 0 (:w canvas) (:h canvas))))
+      (ctx fill-style (color/style 0 0 0))
+      (ctx fill-rect 0 0 (:w canvas) (:h canvas))))
 
 (def fps (/ 1000 60))
 

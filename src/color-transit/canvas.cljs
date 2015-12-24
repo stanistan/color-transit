@@ -1,4 +1,4 @@
-(ns color-transmit.canvas)
+(ns color-transit.canvas)
 
 (defrecord Canvas
   [el ctx w h])
@@ -61,12 +61,11 @@
    distributed for the colors given."
   [colors]
   (let [stop-percent (/ 1.0 (dec (count colors)))]
-    (map-indexed (fn [idx color] [(* step-percent idx) color]) 
+    (map-indexed (fn [idx color] [(* stop-percent idx) color]) 
                  colors)))
 
 (defn gradient-add-colors
   [gradient colors]
-  (-> gradient 
-      (color-stops-for-colors colors)
-      (gradient-add-color-stops)))
-
+  (gradient-add-color-stops 
+    gradient
+    (color-stops-for-colors colors)))
