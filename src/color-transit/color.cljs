@@ -18,7 +18,6 @@
    in the list."
   [current color-list]
   (let [reducer (fn [found-enum c] 
-                  (println "case" current found-enum c)
                   (case found-enum
                     nil (if (= current c) true nil)
                     true c
@@ -39,3 +38,19 @@
   [from-color to-color steps]
   (let [d (delta from-color to-color steps)]
     (conj (map #(+delta from-color d %) (range 0 (inc steps))))))
+
+(defn with-color-and-queue
+  [color-map c q]
+  (assoc color-map :color-queue q
+                   :current-color c))
+
+(defn compute-next-state
+  "Given color settings, return the next [r g b] value."
+  [{:keys [color-queue current-color colors steps] :as color-map}]
+  (if (not (empty? color-queue))
+    (with-color-and-queue color-map (first color-queue) (rest color-queue))
+    (let [next-color (find-next current-color colors)]
+      (recur (with-color-and-queue 
+               color-map 
+               next-color
+               (create-queue current-color next-color steps))))))
