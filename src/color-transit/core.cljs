@@ -34,33 +34,33 @@
          canvas-sets)))
 
 (defn draw-gradients!
-  [canvases canvas-sets]
-  (doseq [{:keys [canvas-idx color-sets]} canvas-sets]
+  [canvas-sets]
+  (doseq [{:keys [canvas color-sets]} canvas-sets]
     (->> color-sets
          (map :current-color)
          (map color/style)
-         (draw-rect-gradient (nth canvases canvas-idx)))))
+         (draw-rect-gradient canvas))))
 
 
 (defn run-loop
   "Executes drawing every whatever time we defined."
-  [canvases app-state]
+  [app-state]
   (let [{:keys [canvas-sets steps]} @app-state]
     (->> (partial update-canvas-sets steps)
          (swap! app-state update :canvas-sets)
          :canvas-sets
-         (draw-gradients! canvases))))
+         draw-gradients!)))
 
 (defn run-app!
   [colors fps]
-  (let [canvases (query->Canvases "#myCanvas")
-        canvas-sets (map-indexed
-                      (fn [idx _] {:canvas-idx idx
-                                   :color-sets (color/->sets colors 3 :shuffle)})
+  (let [canvases (query->Canvases ".myCanvas")
+        canvas-sets (map
+                      (fn [c] {:canvas c
+                               :color-sets (color/->sets colors 3 :shuffle)})
                        canvases)
         state-data {:steps 100 :canvas-sets canvas-sets}]
     (swap! app-state merge state-data)
-    (swap-interval! app-state #(run-loop canvases app-state) fps)))
+    (swap-interval! app-state #(run-loop app-state) fps)))
 
 (enable-console-print!)
 
