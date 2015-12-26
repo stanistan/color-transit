@@ -1,5 +1,6 @@
 (ns color-transit.core
   (:require [color-transit.color :as color]
+            [color-transit.interval :refer [swap-interval!]]
             [color-transit.canvas :refer [ctx id->Canvas fill-style
                                           fill-rect]]))
 
@@ -7,20 +8,6 @@
                           :colors []
                           :current-color nil
                           :color-queue []}))
-
-(defn set-interval
-  [f timeout]
-  (.setInterval js/window f timeout))
-
-(defn clear-interval
-  [interval]
-  (when interval 
-    (.clearInterval js/window interval)))
-
-(defn swap-interval!
-  [state f timeout]
-  (clear-interval (:interval @state))
-  (swap! state assoc :interval (set-interval f timeout)))
 
 (defn draw-rect
   [canvas color]
@@ -42,9 +29,9 @@
                           :colors colors
                           :current-color (first colors)})
   (swap-interval! app-state
-                 #(run-loop (id->Canvas "myCanvas") app-state)
-                 fps)) 
+                  #(run-loop (id->Canvas "myCanvas") app-state)
+                  fps))
 
 (run-app! 
-  [[0 10 0], [200 155 255], [40 40 40], [255 0 0]]
+  [[0 10 0], [200 155 255], [40 40 40], [255 0 0], [0 255 255]]
   (/ 1000 60))
