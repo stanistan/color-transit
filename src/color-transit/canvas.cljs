@@ -11,6 +11,11 @@
   [id]
   (el->Canvas (.getElementById js/document id)))
 
+(defn query->Canvases
+  [query]
+  (let [node-list (.querySelectorAll js/document query)]
+    (map el->Canvas (array-seq node-list 0))))
+
 (defn ctx
   "Apply f to the context of the canvas, return the canvas.
    This is useful for chaining ctx methods.
