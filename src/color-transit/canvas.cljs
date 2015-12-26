@@ -23,7 +23,7 @@
 
 
 ;;
-;; ctx methods 
+;; ctx methods
 ;;
 
 (defn fill-style
@@ -52,22 +52,22 @@
 (defn gradient-add-color-stops
   "Each stop is a tuple: [stop color]"
   [gradient stops]
-  (reduce 
-    #(gradient-add-color-stop %1 (first %2) (second %2)) 
-    gradient 
+  (reduce
+    #(gradient-add-color-stop %1 (first %2) (second %2))
+    gradient
     stops))
 
 (defn color-stops-for-colors
-  "Create a list of color stops that are evently 
+  "Create a list of color stops that are evently
    distributed for the colors given."
   [colors]
   (let [stop-percent (/ 1.0 (dec (count colors)))]
-    (map-indexed (fn [idx color] [(* stop-percent idx) color]) 
+    (map-indexed (fn [idx color] [(* stop-percent idx) color])
                  colors)))
 
 (defn gradient-add-colors
   [gradient colors]
-  (gradient-add-color-stops 
+  (gradient-add-color-stops
     gradient
     (color-stops-for-colors colors)))
 
