@@ -21,6 +21,7 @@
   (apply f (:ctx canvas) args)
   canvas)
 
+
 ;;
 ;; ctx methods 
 ;;
@@ -41,7 +42,7 @@
 
 (defn create-linear-gradient
   [ctx x0 y0 x1 y1]
-  (.createLinearGradient ctx x0 yo x1 y1))
+  (.createLinearGradient ctx x0 y0 x1 y1))
 
 (defn gradient-add-color-stop
   [gradient stop color]
@@ -69,3 +70,9 @@
   (gradient-add-color-stops 
     gradient
     (color-stops-for-colors colors)))
+
+(defn linear-gradient-with-colors
+  [ctx colors x0 y0 x1 y1]
+  (let [gradient (create-linear-gradient ctx x0 y0 x1 y1)]
+    (gradient-add-colors gradient colors)))
+
