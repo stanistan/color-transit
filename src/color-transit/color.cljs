@@ -41,7 +41,7 @@
                    :colors (or colors (:colors color-map))))
 
 (defn compute-next-state
-  "Given color settings, return the next [r g b] value."
+  "Given color settings, return the next  value."
   [{:keys [color-queue current-color colors] :as color-map} steps permute-colors-fn]
   (if (not (empty? color-queue))
     ;; walk the queue
@@ -60,8 +60,8 @@
           ;; create a new queue
           color-queue (create-queue current-color next-color steps)]
       (with-color-and-queue color-map
-                            next-color
-                            color-queue
+                            (first color-queue)
+                            (rest color-queue)
                             colors))))
 
 (defn as-color-set
