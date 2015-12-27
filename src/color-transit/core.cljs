@@ -5,6 +5,14 @@
                                           fill-style fill-rect
                                           linear-gradient-with-colors]]))
 
+(defrecord CanvasSet
+  [canvas color-sets])
+
+(defn colors->CanvasSet
+  [colors n-per-set partition-fn canvas]
+  (->CanvasSet canvas
+               (color/->sets colors n-per-set partition-fn)))
+
 (defonce app-state (atom {:interval nil
                           :canvas-sets []}))
 
@@ -44,7 +52,7 @@
 
 (defn run-loop
   "Executes drawing every whatever time we defined."
-  [app-state]
+  []
   (let [{:keys [canvas-sets steps]} @app-state]
     (->> (partial update-canvas-sets steps)
          (swap! app-state update :canvas-sets)
@@ -52,18 +60,17 @@
          draw-gradients!)))
 
 (defn run-app!
-  [colors fps]
-  (let [canvases (query->Canvases ".myCanvas")
-        canvas-sets (map
-                      (fn [c] {:canvas c
-                               :color-sets (color/->sets colors 3 :shuffle)})
-                       canvases)
-        state-data {:steps 100 :canvas-sets canvas-sets}]
+  [{:keys [selector colors fps steps]}]
+  (let [canvas-sets (map (partial colors->CanvasSet colors 3 :shuffle)
+                         (query->Canvases selector))
+        state-data {:steps steps :canvas-sets canvas-sets}]
     (swap! app-state merge state-data)
-    (swap-interval! app-state #(run-loop app-state) fps)))
+    (swap-interval! app-state run-loop (/ 1000 fps))))
 
 (enable-console-print!)
 
 (run-app!
-  [[0 10 0], [200 155 255], [40 40 40], [255 0 0], [0 255 255], [100 233 67]]
-  (/ 1000 60))
+  {:selector ".myCanvas"
+   :colors [[0 10 0], [200 155 255], [40 40 40], [255 0 0], [0 255 255], [100 233 67]]
+   :fps 60
+   :steps 100})
