@@ -9,8 +9,10 @@
   (when interval (.clearInterval js/window interval)))
 
 (defn swap-interval!
-  [state f timeout & [k]]
-  (let [k (or k :interval)]
-    (clear-interval (k @state))
-    (swap! state assoc k (set-interval f timeout))))
+  [state f timeout & stuff]
+  (clear-interval (:interval @state))
+  (swap! state
+         merge
+         (-> (apply hash-map stuff)
+             (assoc :interval (set-interval f timeout)))))
 

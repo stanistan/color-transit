@@ -50,7 +50,7 @@
          (draw-rect-gradient canvas))))
 
 
-(defn run-loop
+(defn run-loop!
   "Executes drawing every whatever time we defined."
   []
   (let [{:keys [canvas-sets steps]} @app-state]
@@ -59,18 +59,22 @@
          :canvas-sets
          draw-gradients!)))
 
-(defn run-app!
-  [{:keys [selector colors fps steps]}]
-  (let [canvas-sets (map (partial colors->CanvasSet colors 3 :shuffle)
-                         (query->Canvases selector))
-        state-data {:steps steps :canvas-sets canvas-sets}]
-    (swap! app-state merge state-data)
-    (swap-interval! app-state run-loop (/ 1000 fps))))
+(defn start-app!
+  [{:keys [canvas-sets fps steps]}]
+  (swap-interval! app-state
+                  run-loop!
+                  (/ 1000 fps)
+                  :steps steps
+                  :canvas-sets canvas-sets))
 
-(enable-console-print!)
+(let [colors [[0 10 0]
+              [200 155 255]
+              [40 40 40]
+              [255 0 0]
+              [0 255 255]
+              [100 233 67]]]
+  (start-app!
+    {:fps 60 :steps 300
+     :canvas-sets (map (partial colors->CanvasSet colors 3 :shuffle)
+                       (query->Canvases ".myCanvas"))}))
 
-(run-app!
-  {:selector ".myCanvas"
-   :colors [[0 10 0], [200 155 255], [40 40 40], [255 0 0], [0 255 255], [100 233 67]]
-   :fps 60
-   :steps 100})
