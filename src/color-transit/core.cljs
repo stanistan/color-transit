@@ -75,6 +75,6 @@
               [100 233 67]]]
   (start-app!
     {:fps 60 :steps 300
-     :canvas-sets (map (partial colors->CanvasSet colors 3 :shuffle)
+     :canvas-sets (map (partial colors->CanvasSet colors 4 :shuffle)
                        (query->Canvases ".myCanvas"))}))
 
