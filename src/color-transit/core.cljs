@@ -1,34 +1,11 @@
 (ns color-transit.core
-  (:require [color-transit.color :as color]
-            [color-transit.interval :refer [swap-interval!]]
-            [color-transit.canvas :refer [ctx query->Canvases
-                                          fill-style fill-rect
-                                          linear-gradient-with-colors]]))
-
-(defrecord CanvasSet
-  [canvas color-sets])
-
-(defn colors->CanvasSet
-  [colors n-per-set partition-fn canvas]
-  (->CanvasSet canvas
-               (color/->sets colors n-per-set partition-fn)))
+  (:require [color-transit.canvas :refer [ctx query->Canvases draw-gradient]]
+            [color-transit.canvas-set :refer [colors->CanvasSet]]
+            [color-transit.color :as color]
+            [color-transit.interval :refer [swap-interval!]]))
 
 (defonce app-state (atom {:interval nil
                           :canvas-sets []}))
-
-(defn draw-rect
-  [canvas color]
-  (-> canvas
-      (ctx fill-style color)
-      (ctx fill-rect 0 0 (:w canvas) (:h canvas))))
-
-(defn draw-rect-gradient
-  [canvas colors]
-  (let [gradient (linear-gradient-with-colors
-                   (:ctx canvas)
-                   colors
-                   0 0 0 (:h canvas))]
-    (draw-rect canvas gradient)))
 
 (defn update-color-sets
   [steps color-sets]
@@ -47,8 +24,7 @@
     (->> color-sets
          (map :current-color)
          (map color/style)
-         (draw-rect-gradient canvas))))
-
+         (draw-gradient canvas))))
 
 (defn run-loop!
   "Executes drawing every whatever time we defined."
@@ -61,9 +37,7 @@
 
 (defn start-app!
   [{:keys [canvas-sets fps steps]}]
-  (swap-interval! app-state
-                  run-loop!
-                  (/ 1000 fps)
+  (swap-interval! app-state run-loop!  (/ 1000 fps)
                   :steps steps
                   :canvas-sets canvas-sets))
 
@@ -77,4 +51,3 @@
     {:fps 60 :steps 300
      :canvas-sets (map (partial colors->CanvasSet colors 4 :shuffle)
                        (query->Canvases ".myCanvas"))}))
-

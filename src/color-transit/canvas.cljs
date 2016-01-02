@@ -81,3 +81,18 @@
   (let [gradient (create-linear-gradient ctx x0 y0 x1 y1)]
     (gradient-add-colors gradient colors)))
 
+;;
+;; More generic methods
+;;
+
+(defn draw-rect
+  [canvas style & [{:keys [x y] as opts}]]
+  (-> canvas
+      (ctx fill-style style)
+      (ctx fill-rect 0 0 (or x (:w canvas)) (or y (:h canvas)))))
+
+(defn draw-gradient
+  [canvas colors]
+  (draw-rect canvas
+             (linear-gradient-with-colors (:ctx canvas) colors
+                                          0 0 0 (:h canvas))))
