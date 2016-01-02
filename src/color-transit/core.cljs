@@ -29,15 +29,20 @@
 (defn run-loop!
   "Executes drawing every whatever time we defined."
   []
-  (let [{:keys [canvas-sets steps]} @app-state]
-    (->> (partial update-canvas-sets steps)
-         (swap! app-state update :canvas-sets)
-         :canvas-sets
-         draw-gradients!)))
+  (.requestAnimationFrame
+    js/window
+    ;; draw when we can
+    (fn []
+      (let [{:keys [canvas-sets steps]} @app-state]
+        (->> (partial update-canvas-sets steps)
+             (swap! app-state update :canvas-sets)
+             :canvas-sets
+             draw-gradients!)))))
+
 
 (defn start-app!
   [{:keys [canvas-sets fps steps]}]
-  (swap-interval! app-state run-loop!  (/ 1000 fps)
+  (swap-interval! app-state run-loop! (/ 1000 fps)
                   :steps steps
                   :canvas-sets canvas-sets))
 
