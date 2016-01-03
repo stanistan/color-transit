@@ -2,7 +2,9 @@
 
 Gradient transitions in cljs, for funzies.
 
-### development
+[demo](http://stanistan.github.io/color-transit/)
+
+#### development
 
 ```sh
 lein figwheel # and have fun
