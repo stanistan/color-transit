@@ -5,7 +5,7 @@
 
 (defn el->Canvas
   [el]
-  (->Canvas el (.getContext el "2d") (.-clientWidth el) (.-clientHeight el)))
+  (->Canvas el (.getContext el "2d") (.-offsetWidth el) (.-offsetHeight el)))
 
 (defn id->Canvas
   [id]
@@ -86,7 +86,7 @@
 ;;
 
 (defn draw-rect
-  [canvas style & [{:keys [x y] as opts}]]
+  [canvas style & [{:keys [x y] :as opts}]]
   (-> canvas
       (ctx fill-style style)
       (ctx fill-rect 0 0 (or x (:w canvas)) (or y (:h canvas)))))

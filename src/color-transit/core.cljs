@@ -46,6 +46,14 @@
                   :steps steps
                   :canvas-sets canvas-sets))
 
+(defn canvas-full-screen
+  [canvas]
+  (let [w (.-innerWidth js/window)
+        h (.-innerHeight js/window)]
+    (set! (.-width (:el canvas)) w)
+    (set! (.-height (:el canvas)) h)
+    (assoc canvas :w w :h h)))
+
 (let [colors [[0 10 0]
               [200 155 255]
               [40 40 40]
@@ -54,5 +62,6 @@
               [100 233 67]]]
   (start-app!
     {:fps 60 :steps 300
-     :canvas-sets (map (partial colors->CanvasSet colors 4 :shuffle)
-                       (query->Canvases ".myCanvas"))}))
+     :canvas-sets (->> (query->Canvases ".myCanvas")
+                       (map canvas-full-screen)
+                       (map (partial colors->CanvasSet colors 3 :shuffle)))}))

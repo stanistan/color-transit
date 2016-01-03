@@ -1,3 +1,4 @@
 *.log
 target/*
 /resources/public/js/*
+*.sw*
