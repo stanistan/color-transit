@@ -50,7 +50,7 @@
   []
   (swap! app-state update :canvas-sets resize-canvas-sets!))
 
-(defn start-app!
+(defn ^:export start-app!
   [{:keys [canvas-sets fps steps]}]
   (.removeEventListener js/window "resize" resize-listener)
   (.addEventListener js/window "resize" resize-listener)
@@ -58,15 +58,18 @@
                   :steps steps
                   :canvas-sets canvas-sets))
 
-(let [colors [[0 10 0]
-              [200 155 255]
-              [40 40 40]
-              [255 0 0]
-              [0 255 255]
-              [100 233 67]]]
-  (start-app!
-    {:fps 60 :steps 300
-     :canvas-sets (->> (query->Canvases ".myCanvas")
-                       (map full-screen!)
-                       (map (partial colors->CanvasSet colors 3 :shuffle)))}))
+(defn ^:export main
+  []
+  (let [colors [[0 10 0]
+                [200 155 255]
+                [40 40 40]
+                [255 0 0]
+                [0 255 255]
+                [100 233 67]]]
+    (start-app!
+      {:fps 60 :steps 300
+       :canvas-sets (->> (query->Canvases ".myCanvas")
+                         (map full-screen!)
+                         (map (partial colors->CanvasSet colors 3 :shuffle)))})))
 
+(main)
