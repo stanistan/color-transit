@@ -1,5 +1,8 @@
 (ns color-transit.core
-  (:require [color-transit.canvas :refer [ctx query->Canvases draw-gradient]]
+  (:require [color-transit.canvas :refer [ctx
+                                          query->Canvases
+                                          draw-gradient
+                                          full-screen!]]
             [color-transit.canvas-set :refer [colors->CanvasSet]]
             [color-transit.color :as color]
             [color-transit.interval :refer [swap-interval!]]))
@@ -39,20 +42,21 @@
              :canvas-sets
              draw-gradients!)))))
 
+(defn resize-canvas-sets!
+  [canvas-sets]
+  (map #(update % :canvas full-screen!) canvas-sets))
+
+(defn resize-listener
+  []
+  (swap! app-state update :canvas-sets resize-canvas-sets!))
 
 (defn start-app!
   [{:keys [canvas-sets fps steps]}]
+  (.removeEventListener js/window "resize" resize-listener)
+  (.addEventListener js/window "resize" resize-listener)
   (swap-interval! app-state run-loop! (/ 1000 fps)
                   :steps steps
                   :canvas-sets canvas-sets))
-
-(defn canvas-full-screen
-  [canvas]
-  (let [w (.-innerWidth js/window)
-        h (.-innerHeight js/window)]
-    (set! (.-width (:el canvas)) w)
-    (set! (.-height (:el canvas)) h)
-    (assoc canvas :w w :h h)))
 
 (let [colors [[0 10 0]
               [200 155 255]
@@ -63,5 +67,6 @@
   (start-app!
     {:fps 60 :steps 300
      :canvas-sets (->> (query->Canvases ".myCanvas")
-                       (map canvas-full-screen)
+                       (map full-screen!)
                        (map (partial colors->CanvasSet colors 3 :shuffle)))}))
+

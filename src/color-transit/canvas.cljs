@@ -1,11 +1,13 @@
-(ns color-transit.canvas)
+(ns color-transit.canvas
+  (:require [color-transit.dims :as dims]))
 
 (defrecord Canvas
   [el ctx w h])
 
 (defn el->Canvas
   [el]
-  (->Canvas el (.getContext el "2d") (.-offsetWidth el) (.-offsetHeight el)))
+  (let [[w h] (dims/offset el)]
+    (->Canvas el (.getContext el "2d") w h)))
 
 (defn id->Canvas
   [id]
@@ -26,6 +28,20 @@
   (apply f (:ctx canvas) args)
   canvas)
 
+(defn set-size!
+  "Mutates the canvas element size."
+  [{:keys [el] :as canvas} [w h]]
+  (set! (.-width el) w)
+  (set! (.-height el) h)
+  (assoc canvas :w w :h h))
+
+(defn set-size-to-el!
+  [canvas el]
+  (set-size! canvas (dims/inner el)))
+
+(defn full-screen!
+  [canvas]
+  (set-size-to-el! canvas js/window))
 
 ;;
 ;; ctx methods
