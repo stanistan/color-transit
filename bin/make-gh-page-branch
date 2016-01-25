@@ -1,0 +1,74 @@
+#!/bin/bash
+set -e
+
+msg() {
+  echo ""
+  echo "$1"
+}
+
+copyFiles() {
+
+  declare from=$1
+  declare to=$2
+  shift; shift;
+  declare files=$@
+
+  for i in $files
+  do
+		echo "Copying: $from$i -> $to$i"
+    cp "$from$i" "$to$i"
+  done
+}
+
+gitStage() {
+	declare path=$1
+	shift;
+	declare files=$@
+	for i in $files
+	do
+		echo "Staging: $path$i"
+		git add "$path$i"
+	done
+}
+
+
+main() {
+
+  local masterResourcePath="./resources/public/"
+  local ghPagesResourcePath="./"
+
+  local relIndex="index.html"
+  local relMainJs="js/main.js"
+  local relMainJsMap="js/main.js.map"
+  local relFiles=($relIndex $relMainJs $relMainJsMap)
+
+  msg "Making temp dir..."
+  local tmpDir=`mktemp -d -t color-transit`
+  echo "Temp dir: $tmpDir"
+  mkdir -p "$tmpDir/js"
+
+  msg "Cleaning & Building js..."
+  rm "$masterResourcePath$relMainJs"
+  lein cljsbuild once prod
+
+  msg "Copying files..."
+  copyFiles $masterResourcePath "$tmpDir/" "${relFiles[@]}"
+
+  msg "Checking out to gh-pages.."
+  git checkout gh-pages
+
+  msg "Copying to local..."
+	copyFiles "$tmpDir/" $ghPagesResourcePath "${relFiles[@]}"
+
+  msg "Committing..."
+	gitStage $ghPagesResourcePath "${relFiles[@]}"
+  git commit -m "Update gh-pages"
+
+  msg "Checking out to master..."
+  git checkout master
+
+  msg "Cleaning tmpDir..."
+  rm -rf $tmpDir
+}
+
+main
