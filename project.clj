@@ -1,9 +1,8 @@
 (defproject color-transit "0.1.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.170"]]
-  :plugins [[lein-figwheel "0.5.0-1"]
-            [lein-cljsbuild "1.1.2"]]
-  :hooks [leiningen.cljsbuild]
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [org.clojure/clojurescript "1.10.312"]]
+  :plugins [[lein-cljsbuild "1.1.4" :exclusions [org.clojure/clojure]]
+            [lein-figwheel "0.5.16"]]
   :clean-targets ^{:protect false} [:target-path "out" "resources/public/js"]
   :cljsbuild {
     :builds {
